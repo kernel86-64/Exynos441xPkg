@@ -24,7 +24,7 @@ export EDK_TOOLS_PATH=$PWD/../edk2/BaseTools
 # NB: PACKAGES_PATH gets the parent of this package so that -p
 # Exynos441xPkg/Exynos441xPkg.dsc resolves against it (same layout as
 # HtcLeoPkg, whose package root is a PACKAGES_PATH entry).
-export PACKAGES_PATH=$PWD/../edk2:$PWD/../edk2-platforms:$PWD/..
+export PACKAGES_PATH=${PACKAGES_PATH:-$PWD/../edk2:$PWD/..}
 
 # Where the finished image lands
 OUT_DIR=$PWD/Artifacts

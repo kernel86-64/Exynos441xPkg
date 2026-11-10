@@ -336,5 +336,6 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutColumn|160
 
 [BuildOptions]
+  *_CLANGDWARF_ARM_ASLDLINK_FLAGS = -fuse-ld=lld -Wl,--no-pie
   RVCT:RELEASE_*_*_CC_FLAGS  = -DMDEPKG_NDEBUG
   GCC:RELEASE_*_*_CC_FLAGS   = -DMDEPKG_NDEBUG
