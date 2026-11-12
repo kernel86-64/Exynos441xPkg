@@ -7,7 +7,7 @@
 [Defines]
   INF_VERSION    = 0x00010005
   BASE_NAME      = ExynosSmbiosDxe
-  FILE_GUID      = 3c1f7e21-6a4d-4b0c-9c33-2a441220c008
+  FILE_GUID      = 7f4c2a91-6d3e-4b7a-9e21-5b8c4412c008
   MODULE_TYPE    = DXE_DRIVER
   VERSION_STRING = 1.0
 
