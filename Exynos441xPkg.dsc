@@ -164,6 +164,7 @@
   MdeModulePkg/Universal/Acpi/AcpiTableDxe/AcpiTableDxe.inf
   MdeModulePkg/Universal/Acpi/AcpiPlatformDxe/AcpiPlatformDxe.inf
   Exynos441xPkg/AcpiTables/AcpiTables.inf
+  Exynos441xPkg/Drivers/SmbiosDxe/ExynosSmbiosDxe.inf
 
   #
   # Downstream Linux booter (copy LinuxBoot.efi + zImage to any FAT volume).

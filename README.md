@@ -145,3 +145,11 @@ SMB136/SMB328 external charger and MAX17042 gauge. Charging is supervised only
 while Boot Services are available and is disabled before kernel handoff.
 Hardware validation is pending; see [charging evidence, limits and tests](Docs/N7000Charging.md).
 Run `bash Tests/test-charger.sh` for the host fault-injection and hardware-helper checks.
+
+## SMBIOS identity
+
+`Drivers/SmbiosDxe` publishes an SMBIOS 3.8 table with the Exynos platform
+identity. Type 1 describes `Samsung Electronics` / `GT-N7000`; Type 4
+describes `Samsung` / `Samsung Exynos 4210` with two Cortex-A9 cores. This
+lets an OS display the SoC name instead of deriving only the core name from
+MIDR.
