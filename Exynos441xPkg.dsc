@@ -30,6 +30,7 @@
   # KDNET, whose boot-manager transport needs the controller for itself
   # (build.sh --kdnet).
   DEFINE USB_LOG = TRUE
+  DEFINE SMDKC210_QEMU = FALSE
 
 !include Exynos441xPkg/CommonDsc.dsc.inc
 
@@ -131,8 +132,12 @@
   #
   Exynos441xPkg/Drivers/GpioDxe/GpioDxe.inf
   Exynos441xPkg/Drivers/I2CDxe/I2CDxe.inf
+!if $(SMDKC210_QEMU) == FALSE
   Exynos441xPkg/Drivers/GenericKeypadDeviceDxe/GenericKeypadDeviceDxe.inf
   Exynos441xPkg/Drivers/KeypadDxe/KeypadDxe.inf
+  Exynos441xPkg/Drivers/TouchDxe/TouchDxe.inf
+  Exynos441xPkg/Drivers/ChargerDxe/ChargerDxe.inf
+!endif
 
   #
   # Storage: internal eMMC (MSHCI) + microSD (HSMMC2, card-detect gated),
@@ -146,9 +151,11 @@
   #
   # USB peripheral (device mode only): EFI_USBFN_IO_PROTOCOL for KDNET.
   #
+!if $(SMDKC210_QEMU) == FALSE
   Exynos441xPkg/Drivers/UsbFnDxe/UsbFnDxe.inf
 !if $(USB_LOG) == TRUE
   Exynos441xPkg/Drivers/UsbLogDxe/UsbLogDxe.inf
+!endif
 !endif
 
   #
@@ -162,6 +169,8 @@
   # Downstream Linux booter (copy LinuxBoot.efi + zImage to any FAT volume).
   #
   Exynos441xPkg/Application/LinuxBootApp/LinuxBootApp.inf
+  Exynos441xPkg/Application/TouchTestApp/TouchTestApp.inf
+  Exynos441xPkg/Application/ChargeTestApp/ChargeTestApp.inf
 
   #
   # UEFI Shell.

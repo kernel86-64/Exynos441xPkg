@@ -19,6 +19,7 @@
   Exynos441xPkg/Exynos441xPkg.dec
 
 [LibraryClasses]
+  FrameBufferConfigLib
   BaseLib
   ReportStatusCodeLib
   UefiLib

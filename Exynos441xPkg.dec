@@ -24,6 +24,7 @@
   gExynos441xPkgTokenSpaceGuid   = { 0x7f1c441a, 0x5b2e, 0x4d18, { 0xa3, 0xc7, 0x91, 0x6e, 0x42, 0xf0, 0x88, 0x11 } }
 
 [Protocols.common]
+  gExynosChargerProtocolGuid = { 0xa8e54f12, 0x7e6b, 0x4be0, { 0x98, 0xb4, 0x14, 0x48, 0x70, 0x00, 0x00, 0x01 } }
   # Exynos4 GPIO banks (Get/Set/Config over CON/DAT/PULL registers).
   gExynosGpioProtocolGuid        = { 0x9d3f4a71, 0x5c20, 0x4b8e, { 0xa1, 0x77, 0x6e, 0x24, 0x41, 0x10, 0x44, 0x01 } }
 
@@ -67,3 +68,5 @@
   # arch/arm/mach-exynos/include/mach/irqs-exynos4.h, which is GIC INTID
   # 89 (S5P_IRQ offsets by 32, and the GIC sees the raw SPI number).
   gExynos441xPkgTokenSpaceGuid.PcdMctGlobalTimerIrq|89|UINT32|0x0000100D
+
+  gExynos441xPkgTokenSpaceGuid.PcdSmdkc210Qemu|FALSE|BOOLEAN|0x0000100E

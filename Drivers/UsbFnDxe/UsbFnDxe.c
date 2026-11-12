@@ -12,10 +12,12 @@
 **/
 
 #include "UsbFnDxe.h"
+#include <Protocol/ExynosCharger.h>
 
 #define REG(x)  (DWC2_BASE + (x))
 
 STATIC USBFN_DEV  *mDev;
+STATIC EXYNOS_CHARGER_PROTOCOL *mCharger;
 
 //
 // ---------------------------------------------------------------------------
@@ -175,6 +177,7 @@ Ep0Standard (
 
     case USB_REQ_SET_CONFIG:
       Dev->Configuration = (UINT8)Req->Value;
+      mCharger->UsbConfigured (mCharger, Dev->Configuration != 0);
       if (Dev->Configuration != 0) {
         Dwc2ActivateEndpoints (Dev);
       }
@@ -363,6 +366,7 @@ UsbFnServiceInterrupt (
   if (Sts & GINT_USBRST) {
     MmioWrite32 (REG (GINTSTS), GINT_USBRST);
     Dwc2BusReset (Dev);
+    mCharger->UsbConfigured (mCharger, FALSE);
     UsbFnQueueEvent (Dev, EfiUsbMsgBusEventReset, NULL);
   }
 
@@ -379,11 +383,13 @@ UsbFnServiceInterrupt (
 
   if (Sts & GINT_USBSUSP) {
     MmioWrite32 (REG (GINTSTS), GINT_USBSUSP);
+    mCharger->UsbConfigured (mCharger, FALSE);
     UsbFnQueueEvent (Dev, EfiUsbMsgBusEventSuspend, NULL);
   }
 
   if (Sts & GINT_WKUPINT) {
     MmioWrite32 (REG (GINTSTS), GINT_WKUPINT);
+    mCharger->UsbConfigured (mCharger, Dev->Configuration != 0);
     UsbFnQueueEvent (Dev, EfiUsbMsgBusEventResume, NULL);
   }
 
@@ -908,6 +914,7 @@ UsbFnStopController (
   }
 
   Dwc2Connect (FALSE);
+  mCharger->UsbConfigured (mCharger, FALSE);
   Dev->Interrupt->DisableInterruptSource (Dev->Interrupt, DWC2_IRQ);
   MmioWrite32 (REG (GINTMSK), 0);
   Dev->Started = FALSE;
@@ -1048,6 +1055,11 @@ UsbFnDxeInitialize (
   )
 {
   EFI_STATUS  Status;
+
+  Status = gBS->LocateProtocol (&gExynosChargerProtocolGuid, NULL, (VOID **)&mCharger);
+  if (EFI_ERROR (Status)) {
+    return Status;
+  }
 
   mDev = AllocateZeroPool (sizeof (*mDev));
   if (mDev == NULL) {

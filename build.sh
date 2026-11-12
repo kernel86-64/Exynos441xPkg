@@ -32,11 +32,13 @@ mkdir -p "$OUT_DIR"
 
 UART=0
 USB_LOG=TRUE
+QEMU_BOARD=FALSE
 for arg in "$@"; do
     case "${arg}" in
         --uart) UART=1 ;;
         --kdnet) USB_LOG=FALSE ;;
-        *) echo "Unknown argument: ${arg} (--uart, --kdnet)"; exit 1 ;;
+        --smdkc210) QEMU_BOARD=TRUE ; UART=1 ;;
+        *) echo "Unknown argument: ${arg} (--uart, --kdnet, --smdkc210)"; exit 1 ;;
     esac
 done
 
@@ -48,7 +50,7 @@ else
     DSCOPTS=(-D USE_SCREEN_FOR_SERIAL_OUTPUT=1 -D USE_UART_FOR_SERIAL_OUTPUT=0)
     echo "Debug output on the framebuffer (the phone has no UART)"
 fi
-DSCOPTS+=(-D USB_LOG=${USB_LOG})
+DSCOPTS+=(-D USB_LOG=${USB_LOG} -D SMDKC210_QEMU=${QEMU_BOARD})
 [ "${USB_LOG}" = FALSE ] && echo "UsbLogDxe left out: USB belongs to KDNET"
 
 function _patch_edk() {
@@ -123,14 +125,48 @@ cat BootShim/BootShim.bin "$FD" > "$PAYLOAD"
 
 # Downstream Linux booter: copy it next to a zImage on any FAT volume.
 cp "$WORKSPACE/Build/Exynos441x/${TARGET:-DEBUG}_CLANGDWARF/ARM/LinuxBoot.efi" "$OUT_DIR/"
+cp "$WORKSPACE/Build/Exynos441x/${TARGET:-DEBUG}_CLANGDWARF/ARM/TouchTest.efi" "$OUT_DIR/"
+cp "$WORKSPACE/Build/Exynos441x/${TARGET:-DEBUG}_CLANGDWARF/ARM/ChargeTest.efi" "$OUT_DIR/"
 
 echo
 echo "Build OK"
 echo "  Firmware device : $FD ($(stat -c%s "$FD") bytes)"
 echo "  Boot payload    : $PAYLOAD ($(stat -c%s "$PAYLOAD") bytes)"
 echo
-echo "Flash it as a raw zImage (Heimdall):"
-echo "  heimdall flash --KERNEL $PAYLOAD"
-echo
-echo "Then boot the phone; you should see 'Exynos441xPkg UEFI' printed on"
-echo "the screen followed by the DXE dispatch log and a UEFI Shell prompt."
+if [ "${QEMU_BOARD}" = TRUE ]; then
+    echo smdkc210 > "$OUT_DIR/bootpayload.target"
+    echo "Target: QEMU SMDKC210 (UART console, HSMMC2 microSD)"
+else
+    echo n7000 > "$OUT_DIR/bootpayload.target"
+    echo "Target: Samsung GT-N7000"
+    echo "Flash it as a raw zImage (Heimdall):"
+    echo "  heimdall flash --KERNEL $PAYLOAD"
+fi
+sha256sum "$PAYLOAD" > "$OUT_DIR/bootpayload.sha256"
+python3 - "$PWD" "$PAYLOAD" "$QEMU_BOARD" <<'PY'
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import sys
+
+root, payload = Path(sys.argv[1]), Path(sys.argv[2])
+data = payload.read_bytes()
+attributes = next(line.split()[-1] for line in
+                  (root / 'Library/Exynos441xPkgLib/Exynos441xPkgMem.c').read_text().splitlines()
+                  if line.startswith('#define DDR_ATTRIBUTES_CACHED'))
+info = {
+    'package_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip(),
+    'working_tree_dirty': bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=root)),
+    'edk2_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root.parent / 'edk2', text=True).strip(),
+    'target': 'smdkc210' if sys.argv[3] == 'TRUE' else 'n7000',
+    'candidate_sha256': hashlib.sha256(data).hexdigest(),
+    'size': len(data),
+    'touch_driver': sys.argv[3] != 'TRUE',
+    'charger_driver': sys.argv[3] != 'TRUE',
+    'charging_hardware_tested': False,
+    'dram_attributes': attributes,
+    'hardware_boot_tested': False,
+}
+(payload.parent / 'build-info.json').write_text(json.dumps(info, indent=2) + '\n')
+PY

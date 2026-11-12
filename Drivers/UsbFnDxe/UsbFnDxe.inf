@@ -37,6 +37,7 @@
   UefiDriverEntryPoint
 
 [Protocols]
+  gExynosChargerProtocolGuid
   gEfiUsbFunctionIoProtocolGuid
   gHardwareInterruptProtocolGuid
   gExynosClockProtocolGuid
@@ -44,6 +45,7 @@
   gExynosI2cProtocolGuid
 
 [Depex]
+  gExynosChargerProtocolGuid AND
   gHardwareInterruptProtocolGuid AND
   gExynosClockProtocolGuid AND
   gExynosGpioProtocolGuid AND

@@ -76,6 +76,7 @@ STATIC CONST EXYNOS_CLOCK_DESC  mClocks[ExynosClkMax] = {
   [ExynosClkGateI2c4]   = { 0, 0, 0, 0, 0, 0, 0, 0, CLKGATE_IP_PERIL, 10 },
   [ExynosClkGateI2c5]   = { 0, 0, 0, 0, 0, 0, 0, 0, CLKGATE_IP_PERIL, 11 },
   [ExynosClkGateI2c6]   = { 0, 0, 0, 0, 0, 0, 0, 0, CLKGATE_IP_PERIL, 12 },
+  [ExynosClkGateAdc]    = { 0, 0, 0, 0, 0, 0, 0, 0, CLKGATE_IP_PERIL, 15 },
   [ExynosClkGateI2c7]   = { 0, 0, 0, 0, 0, 0, 0, 0, CLKGATE_IP_PERIL, 13 },
 };
 

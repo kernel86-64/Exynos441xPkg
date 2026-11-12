@@ -10,6 +10,7 @@
 **/
 
 #include "SdCardDxe.h"
+#include <Library/PcdLib.h>
 
 //
 // Per-card BlockIo instance: a BlockIo protocol bound to one MMC_HOST.
@@ -377,6 +378,10 @@ SdCardProbe (
   // eMMC: keep the bootloader's sclk_dwmci, just read its rate for the
   // MSHCI divider.
   //
+  if (FixedPcdGetBool (PcdSmdkc210Qemu)) {
+    goto MicroSd;
+  }
+
   Clock->Enable (Clock, ExynosClkGateDwmci);
   Clock->Enable (Clock, ExynosClkSclkDwmci);
   if (EFI_ERROR (Clock->GetRate (Clock, ExynosClkSclkDwmci, &SclkHz))) {
@@ -414,6 +419,7 @@ SdCardProbe (
   // make it a plain input first.  Pull-up: an empty slot then reads 1 even
   // without the board's external pull-up; an inserted card shorts it to GND.
   //
+MicroSd:
   Gpio->Config (Gpio, EXYNOS_GPIO (SD_CD_GPIO_BANK, SD_CD_GPIO_PIN),
                 EXYNOS_GPIO_MODE_INPUT, EXYNOS_GPIO_PULL_UP);
   gBS->Stall (10000);
@@ -425,7 +431,7 @@ SdCardProbe (
   }
 
 
-  Status = SdPowerOn (Gpio);
+  Status = FixedPcdGetBool (PcdSmdkc210Qemu) ? EFI_SUCCESS : SdPowerOn (Gpio);
   if (EFI_ERROR (Status)) {
     DEBUG ((DEBUG_ERROR, "SdCard: microSD power-on failed - %r\n", Status));
     return EFI_SUCCESS;

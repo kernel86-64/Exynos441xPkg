@@ -63,7 +63,11 @@
 
   # ARM architectural libraries
   CacheMaintenanceLib|ArmPkg/Library/ArmCacheMaintenanceLib/ArmCacheMaintenanceLib.inf
+!if $(USE_SCREEN_FOR_SERIAL_OUTPUT) == 1
   DefaultExceptionHandlerLib|Exynos441xPkg/Library/DefaultExceptionHandlerLib/DefaultExceptionHandlerLib.inf
+!else
+  DefaultExceptionHandlerLib|ArmPkg/Library/DefaultExceptionHandlerLib/DefaultExceptionHandlerLib.inf
+!endif
   CpuExceptionHandlerLib|ArmPkg/Library/ArmExceptionLib/ArmExceptionLib.inf
   ArmMmuLib|UefiCpuPkg/Library/ArmMmuLib/ArmMmuBaseLib.inf
   ArmLib|ArmPkg/Library/ArmLib/ArmBaseLib.inf
@@ -203,6 +207,10 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdConOutGopSupport|TRUE
 
 [PcdsFixedAtBuild.common]
+!if $(SMDKC210_QEMU) == TRUE
+  gEfiShellPkgTokenSpaceGuid.PcdShellDefaultDelay|0
+!endif
+  gExynos441xPkgTokenSpaceGuid.PcdSmdkc210Qemu|$(SMDKC210_QEMU)
   gEmbeddedTokenSpaceGuid.PcdPrePiCpuIoSize|44
   gEfiMdePkgTokenSpaceGuid.PcdMaximumUnicodeStringLength|1000000
   gEfiMdePkgTokenSpaceGuid.PcdMaximumAsciiStringLength|1000000
@@ -336,6 +344,9 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutColumn|160
 
 [BuildOptions]
+!if $(SMDKC210_QEMU) == TRUE
+  *_CLANGDWARF_ARM_ASLPP_FLAGS = -DSMDKC210_QEMU=1
+!endif
   *_CLANGDWARF_ARM_ASLDLINK_FLAGS = -fuse-ld=lld -Wl,--no-pie
   RVCT:RELEASE_*_*_CC_FLAGS  = -DMDEPKG_NDEBUG
   GCC:RELEASE_*_*_CC_FLAGS   = -DMDEPKG_NDEBUG

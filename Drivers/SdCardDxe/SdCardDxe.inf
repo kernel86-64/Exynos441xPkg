@@ -28,6 +28,7 @@
   Exynos441xPkg/Exynos441xPkg.dec
 
 [LibraryClasses]
+  PcdLib
   BaseLib
   BaseMemoryLib
   DebugLib
@@ -43,6 +44,9 @@
   gExynosGpioProtocolGuid
   gExynosI2cProtocolGuid
   gExynosClockProtocolGuid
+
+[FixedPcd]
+  gExynos441xPkgTokenSpaceGuid.PcdSmdkc210Qemu
 
 [Depex]
   gExynosGpioProtocolGuid AND

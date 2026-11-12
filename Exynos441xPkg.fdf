@@ -153,8 +153,12 @@ APRIORI DXE {
   # (its DEPEX), which publishes KEYPAD_DEVICE_PROTOCOL for KeypadDxe's
   # driver binding to turn into SimpleTextIn.
   #
+!if $(SMDKC210_QEMU) == FALSE
   INF Exynos441xPkg/Drivers/GenericKeypadDeviceDxe/GenericKeypadDeviceDxe.inf
   INF Exynos441xPkg/Drivers/KeypadDxe/KeypadDxe.inf
+  INF Exynos441xPkg/Drivers/TouchDxe/TouchDxe.inf
+  INF Exynos441xPkg/Drivers/ChargerDxe/ChargerDxe.inf
+!endif
 
   #
   # Storage: eMMC (MSHCI) + microSD (HSMMC2, card-detect gated) BlockIo,
@@ -168,9 +172,11 @@ APRIORI DXE {
   #
   # USB peripheral (device mode only): EFI_USBFN_IO_PROTOCOL for KDNET.
   #
+!if $(SMDKC210_QEMU) == FALSE
   INF Exynos441xPkg/Drivers/UsbFnDxe/UsbFnDxe.inf
 !if $(USB_LOG) == TRUE
   INF Exynos441xPkg/Drivers/UsbLogDxe/UsbLogDxe.inf
+!endif
 !endif
 
   #

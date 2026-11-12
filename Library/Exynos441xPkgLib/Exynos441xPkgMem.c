@@ -20,6 +20,7 @@
 
 #include <ExynosBootParams.h>
 #include <ExynosLogRing.h>
+#include <ExynosOsLog.h>
 
 // The total number of descriptors, including the final "end-of-table" descriptor.
 #define MAX_VIRTUAL_MEMORY_MAP_DESCRIPTORS 12
@@ -271,6 +272,7 @@ ArmPlatformGetVirtualMemoryMap (
   // Boot log ring (ExynosLogRing.h), written since PrePi entry.
   //
   CarveReservedRange (LOG_RING_BASE, LOG_RING_SIZE);
+  CarveReservedRange (OS_LOG_BASE, OS_LOG_SIZE);
 
   //
   // The bootloader's r1/r2 and ATAG list (ExynosBootParams.h), kept for a

@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+[Defines]
+  INF_VERSION    = 0x00010005
+  BASE_NAME      = ChargeTest
+  FILE_GUID      = a8e54f12-7e6b-4be0-98b4-144870000003
+  MODULE_TYPE    = UEFI_APPLICATION
+  VERSION_STRING = 1.0
+  ENTRY_POINT    = UefiMain
+
+[Sources]
+  ChargeTestApp.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  Exynos441xPkg/Exynos441xPkg.dec
+
+[LibraryClasses]
+  UefiApplicationEntryPoint
+  UefiLib
+  UefiBootServicesTableLib
+
+[Protocols]
+  gExynosChargerProtocolGuid

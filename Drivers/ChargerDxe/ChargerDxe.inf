@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+[Defines]
+  INF_VERSION    = 0x00010005
+  BASE_NAME      = ExynosChargerDxe
+  FILE_GUID      = a8e54f12-7e6b-4be0-98b4-144870000002
+  MODULE_TYPE    = DXE_DRIVER
+  VERSION_STRING = 1.0
+  ENTRY_POINT    = ChargerDxeInitialize
+
+[Sources]
+  ChargerDxe.c
+  Charger.c
+  Charger.h
+
+[Packages]
+  MdePkg/MdePkg.dec
+  Exynos441xPkg/Exynos441xPkg.dec
+
+[LibraryClasses]
+  DebugLib
+  IoLib
+  TimerLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+
+[Protocols]
+  gExynosChargerProtocolGuid
+  gExynosGpioProtocolGuid
+  gExynosI2cProtocolGuid
+  gExynosClockProtocolGuid
+
+[Depex]
+  gExynosGpioProtocolGuid AND
+  gExynosI2cProtocolGuid AND
+  gExynosClockProtocolGuid

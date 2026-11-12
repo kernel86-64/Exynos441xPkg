@@ -42,6 +42,8 @@ typedef enum {
   ExynosClkGateI2c6,
   ExynosClkGateI2c7,
 
+  ExynosClkGateAdc,
+
   ExynosClkMax
 } EXYNOS_CLOCK_ID;
 

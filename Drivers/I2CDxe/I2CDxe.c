@@ -227,11 +227,13 @@ I2cXfer (
   INTN    Ret;
   INTN    Index;
   UINTN   Tries;
+  EFI_TPL OldTpl;
 
   if ((Bus >= EXYNOS_I2C_MAX_BUS) || (Msgs == NULL) || (Num <= 0)) {
     return -1;
   }
 
+  OldTpl = gBS->RaiseTPL (TPL_NOTIFY);
   Base = I2C_BASE (Bus);
   I2cEnableClock (Bus);
   I2cInit (Base);
@@ -241,6 +243,7 @@ I2cXfer (
     if (Tries >= I2C_TIMEOUT_US) {
       DEBUG ((DEBUG_ERROR, "I2c%u: bus busy, IICSTAT=0x%x\n",
               Bus, MmioRead32 (Base + IICSTAT_OFFSET)));
+      gBS->RestoreTPL (OldTpl);
       return -1;
     }
 
@@ -264,6 +267,7 @@ I2cXfer (
             MmioRead32 (Base + IICSTAT_OFFSET), MmioRead32 (Base + IICCON_OFFSET)));
   }
 
+  gBS->RestoreTPL (OldTpl);
   return (Ret == 0) ? Num : -1;
 }
 
